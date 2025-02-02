@@ -1,0 +1,6 @@
+name: SimplyCasinoGames
+api-version: 1.7.10
+version: '1.0.0'
+main: com.railwaycraft.SimplyCasinoGames
+depend: [RWCEconomy]
+commands:

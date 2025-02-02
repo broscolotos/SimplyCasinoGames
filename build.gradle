@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+}
+
+group 'com.railwaycraft.SimplyCasinoGames'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple'}
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:23.0.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    compileOnly name: 'spigot', version: '1.7.10-SNAPSHOT', classifier: 'b1657'
+    //compileOnly name: 'Essentials'
+    compileOnly name: 'RWCEconomy'
+    //compileOnly name: 'InSignsPlus'
+    //compileOnly name: 'ThermalExpansion-[1.7.10]4.1.5-248'
+    //compileOnly name: 'forgeSrc-1.7.10-10.13.4.1614-1.7.10'
+    //compileOnly name: 'CoFHCore-[1.7.10]3.1.4-329'
+    //compileOnly name: 'Thermos-1.7.10-1614-server'
+    //compileOnly name: 'item-nbt-api-plugin-2.10.0'
+    //implementation "com.github.MilkBowl:VaultAPI:1.7"
+    //implementation 'org.xerial:sqlite-jdbc:3.40.0.0'
+    //implementation 'com.mysql:mysql-connector-j:8.0.31'
+    //implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+}
+test {
+    useJUnitPlatform()
+}

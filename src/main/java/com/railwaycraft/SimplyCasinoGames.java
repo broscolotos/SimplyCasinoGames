@@ -1,6 +1,8 @@
 package com.railwaycraft;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import com.railwaycraft.listeners.SCGEventListener;
@@ -18,6 +20,9 @@ public final class SimplyCasinoGames extends JavaPlugin {
     public static SimplyCasinoGames plugin;
     public static RWCEconomy economy;
     public String chatPrefix;
+    public int buyIn;
+    public int[] slotItemIDs = new int[4];
+    public static Random rng = new Random();
 
     @Override
     public void onEnable() {
@@ -26,6 +31,11 @@ public final class SimplyCasinoGames extends JavaPlugin {
         config = plugin.getConfig();
         config.options().copyDefaults(true);
         chatPrefix = config.getString("Chat Prefix");
+        slotItemIDs[0] = config.getInt("Worst Item");
+        slotItemIDs[1] = config.getInt("Bad Item");
+        slotItemIDs[2] = config.getInt("Good Item");
+        slotItemIDs[3] = config.getInt("Best Item");
+        buyIn = config.getInt("Buy-in");
         plugin.saveConfig();
         CommandRegistry.register();
         LOGGER.setParent(plugin.getLogger());

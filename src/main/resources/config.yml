@@ -1,2 +1,17 @@
 #Chat Prefix
 Chat Prefix: "SCG"
+
+#Default Buy-in
+Buy-in: 200
+
+#slots item WORST
+Worst Item: 263
+
+#slots item BAD
+Bad Item: 265
+
+#slots item GOOD
+Good Item: 266
+
+#slots item BEST
+Best Item: 264

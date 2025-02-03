@@ -4,3 +4,7 @@ version: '1.0.0'
 main: com.railwaycraft.SimplyCasinoGames
 depend: [RWCEconomy]
 commands:
+  blackjack:
+    usage: /blackjack <player> <tableNumber> [BuyIn]
+  slots:
+    usage: /slots <player> <BuyIn>

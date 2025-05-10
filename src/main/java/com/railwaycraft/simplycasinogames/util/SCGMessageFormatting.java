@@ -1,6 +1,6 @@
-package com.railwaycraft.util;
+package com.railwaycraft.simplycasinogames.util;
 
-import com.railwaycraft.SimplyCasinoGames;
+import com.railwaycraft.simplycasinogames.SimplyCasinoGames;
 import org.bukkit.ChatColor;
 
 public class SCGMessageFormatting {

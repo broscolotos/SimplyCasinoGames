@@ -1,12 +1,16 @@
-package com.railwaycraft;
+package com.railwaycraft.simplycasinogames;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import com.railwaycraft.listeners.SCGEventListener;
-import com.railwaycraft.registry.CommandRegistry;
+import com.railwaycraft.simplycasinogames.handlers.BlackjackPregame;
+import com.railwaycraft.simplycasinogames.handlers.BlackjackRuntime;
+import com.railwaycraft.simplycasinogames.listeners.SCGEventListener;
+import com.railwaycraft.simplycasinogames.registry.CommandRegistry;
+import com.railwaycraft.rwceconomy.RWCEconomy;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
@@ -23,6 +27,9 @@ public final class SimplyCasinoGames extends JavaPlugin {
     public int buyIn;
     public int[] slotItemIDs = new int[4];
     public static Random rng = new Random();
+    public static ArrayList<String> deckOfCards = new ArrayList<>();
+    public static LinkedList<BlackjackRuntime> runningBlackjackGames = new LinkedList<>();
+    public static ArrayList<BlackjackPregame> blackjackPregames = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -41,6 +48,7 @@ public final class SimplyCasinoGames extends JavaPlugin {
         LOGGER.setParent(plugin.getLogger());
         economy = (RWCEconomy)Bukkit.getPluginManager().getPlugin("RWCEconomy");
         getServer().getPluginManager().registerEvents(new SCGEventListener(), plugin);
+        populateDeck();
     }
 
     public static Logger logger() { return LOGGER; }
@@ -59,4 +67,14 @@ public final class SimplyCasinoGames extends JavaPlugin {
     @Override
     public void onDisable() { HandlerList.unregisterAll(); }
 
+
+    public void populateDeck() {
+        String[] suits = new String[]{"Hearts","Diamonds","Clubs","Spades"};
+        String[] individuals = new String[]{"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "Jack", "Queen", "King"};
+        for (String suit : suits) {
+            for (String indi : individuals) {
+                deckOfCards.add(indi + " of " + suit);
+            }
+        }
+    }
 }

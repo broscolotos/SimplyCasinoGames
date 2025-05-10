@@ -1,4 +1,4 @@
-package com.railwaycraft.util;
+package com.railwaycraft.simplycasinogames.util;
 
 
 import org.bukkit.inventory.ItemStack;

@@ -1,8 +1,8 @@
-package com.railwaycraft.handlers;
+package com.railwaycraft.simplycasinogames.handlers;
 
-import com.railwaycraft.SimplyCasinoGames;
-import com.railwaycraft.util.SCGMessageFormatting;
-import com.railwaycraft.util.SlotGamestate;
+import com.railwaycraft.simplycasinogames.SimplyCasinoGames;
+import com.railwaycraft.simplycasinogames.util.SCGMessageFormatting;
+import com.railwaycraft.simplycasinogames.util.SlotGamestate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;

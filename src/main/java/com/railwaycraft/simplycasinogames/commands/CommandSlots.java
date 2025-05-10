@@ -1,6 +1,7 @@
-package com.railwaycraft.commands;
+package com.railwaycraft.simplycasinogames.commands;
 
-import com.railwaycraft.SimplyCasinoGames;
+import com.railwaycraft.simplycasinogames.SimplyCasinoGames;
+import com.railwaycraft.simplycasinogames.util.SCGMessageFormatting;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,7 +23,7 @@ public class CommandSlots implements CommandExecutor {
             if (args.length == 1) {
                 Player p = Bukkit.getPlayer(args[0]);
                 if (p == null) {
-                    //TODO: error for no player specified
+                    p.sendMessage(SCGMessageFormatting.errorMessagePrefix + "No player was specified.");
                 } else {
                     slotsGUI(p, SimplyCasinoGames.getInstance().buyIn);
                 }
@@ -30,19 +31,18 @@ public class CommandSlots implements CommandExecutor {
             else if (args.length == 2) {
                 Player p = Bukkit.getPlayer(args[0]);
                 if (p == null) {
-                    //TODO: error for no player specified
+                    p.sendMessage(SCGMessageFormatting.errorMessagePrefix + "No player was specified.");
                 } else {
                     try {
                         double buyIn = Double.parseDouble(args[1]);
                         slotsGUI(p, buyIn);
                     } catch (NumberFormatException e) {
-                        //TODO: error for non-int specified for buy-in.
+                        p.sendMessage(SCGMessageFormatting.errorMessagePrefix + "The argument after player must be a number.");
                     }
                 }
-                //TODO: buy-in specified
             }
             else {
-                //TODO: error; incorrect usage
+                sender.sendMessage(SCGMessageFormatting.errorMessagePrefix + "incorrect usage. Contact the developers if you believe this is an error!");
             }
         }
         return true;

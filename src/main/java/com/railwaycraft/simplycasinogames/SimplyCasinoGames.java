@@ -2,17 +2,20 @@ package com.railwaycraft.simplycasinogames;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.logging.Logger;
 
 import com.railwaycraft.simplycasinogames.handlers.BlackjackPregame;
 import com.railwaycraft.simplycasinogames.handlers.BlackjackRuntime;
+import com.railwaycraft.simplycasinogames.handlers.RouletteRuntime;
 import com.railwaycraft.simplycasinogames.listeners.SCGEventListener;
 import com.railwaycraft.simplycasinogames.registry.CommandRegistry;
 import com.railwaycraft.rwceconomy.RWCEconomy;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,6 +33,7 @@ public final class SimplyCasinoGames extends JavaPlugin {
     public static ArrayList<String> deckOfCards = new ArrayList<>();
     public static LinkedList<BlackjackRuntime> runningBlackjackGames = new LinkedList<>();
     public static ArrayList<BlackjackPregame> blackjackPregames = new ArrayList<>();
+    public static HashMap<Player, RouletteRuntime> rouletteGames = new HashMap<>();
 
     @Override
     public void onEnable() {

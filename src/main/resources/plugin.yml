@@ -8,3 +8,5 @@ commands:
     usage: /blackjack <player> <tableNumber> [BuyIn]
   slots:
     usage: /slots <player> <BuyIn>
+  roulette:
+    usage: /roulette <player> <BuyIn>

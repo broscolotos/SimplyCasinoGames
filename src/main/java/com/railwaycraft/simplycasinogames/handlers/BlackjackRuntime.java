@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +13,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.*;
 
@@ -28,6 +26,7 @@ public class BlackjackRuntime {
     public double wager = -1;
     public HashMap<String,LinkedList<String>> cardsPerPlayer = new HashMap<>();
     public HashMap<Player, Boolean> isReady = new HashMap<>();
+    public boolean endgame = false;
 
     public BlackjackRuntime(Player player, int tableID, double price) {
         this.players.add(player);
@@ -126,26 +125,38 @@ public class BlackjackRuntime {
     public int calcCardValues(String playerName) {
         LinkedList<String> cards = cardsPerPlayer.get(playerName);
         int total = 0;
-        boolean hasAce = false;
+        int aces = 0;
         for (String s : cards) {
-            if (s.contains("Ace")) {
-                total += 11;
-                hasAce = true;
+            int cardValue = getCardValue(s);
+            if (cardValue == 11) {
+                aces++;
             }
-            else if (s.contains("Jack") || s.contains("Queen") || s.contains("King")) {
-                total += 10;
-            }
-            else {
-                try {
-                    total += Integer.parseInt(s.substring(0,s.indexOf(" ")));
-                }
-                catch (Exception ignored) {}
-            }
+            total += cardValue;
         }
-        if (hasAce && total > 21) {
+        int counter = 0;
+        while (total > 21 && counter < aces) {
             total -= 10;
+            counter++;
         }
         return total;
+    }
+
+    public int getCardValue(String s) {
+        if (s.contains("Ace")) {
+            return 11;
+        }
+        else if (s.contains("Jack") || s.contains("Queen") || s.contains("King")) {
+            return 10;
+        }
+        else {
+            try {
+                return Integer.parseInt(s.substring(0,s.indexOf(" ")));
+            }
+            catch (Exception ignored) {}
+        }
+        //shouldn't ever happen
+        return -1;
+
     }
 
     public void setPlayerItem(String name, int slot, Inventory inventory) {
@@ -160,9 +171,19 @@ public class BlackjackRuntime {
         }
         LinkedList<String> lore = new LinkedList<>();
         for(int i = 0; i< cardsPerPlayer.get(name).size(); i++) {
-            lore.add(ChatColor.GRAY + "Card " + (1+i) + " : " + ChatColor.YELLOW + cardsPerPlayer.get(name).get(i));
+            if (!name.equals("dealer") || (i==0 || players.size() == isReady.size())) {
+                lore.add(ChatColor.GRAY + "Card " + (1 + i) + " : " + ChatColor.YELLOW + cardsPerPlayer.get(name).get(i));
+            }
+            else {
+                lore.add(ChatColor.GRAY + "Card " + (1 + i) + " : " + ChatColor.YELLOW + "Unknown");
+            }
         }
-        lore.add(ChatColor.GRAY + "Total : " + ChatColor.YELLOW + calcCardValues(name));
+        if (lore.getLast().contains("Unknown")) {
+            lore.add(ChatColor.GRAY + "Total : " + ChatColor.YELLOW + getCardValue(cardsPerPlayer.get("dealer").get(0)));
+        }
+        else {
+            lore.add(ChatColor.GRAY + "Total : " + ChatColor.YELLOW + calcCardValues(name));
+        }
         meta.setLore(lore);
         stack.setItemMeta(meta);
         inventory.setItem(slot, stack);
@@ -177,7 +198,13 @@ public class BlackjackRuntime {
             }
         }
         if (players.size() == isReady.size()) {
-            dealerDrawCard();
+            for (Player p : players) {
+                Inventory inventory = p.getOpenInventory().getTopInventory();
+                setPlayerItem("Dealer", 13, inventory);
+            }
+            if (!endgame) {
+                dealerDrawCard();
+            }
         }
     }
 
@@ -213,12 +240,13 @@ public class BlackjackRuntime {
             updateReady();
             setItem(Material.STAINED_GLASS_PANE.getId(), 13, " ", 32, inventory);
             if (calcCardValues(player.getName()) > 21) {
-                loseEvent(player, 0);
+                loseEvent(player, 4);
             }
         }
     }
 
     public void dealerDrawCard() {
+        endgame = true;
         if (calcCardValues("dealer") < 17) {
             new BukkitRunnable() {
 
@@ -237,7 +265,7 @@ public class BlackjackRuntime {
                     dealerDrawCard();
                 }
 
-            }.runTaskLater(SimplyCasinoGames.getInstance(), 20L);
+            }.runTaskLater(SimplyCasinoGames.getInstance(), 25L);
         }
         else {
             endGame();
@@ -258,6 +286,9 @@ public class BlackjackRuntime {
             @Override
             public void run() {
                 Inventory inv = player.getOpenInventory().getTopInventory();
+                if (inv == null) {
+                    return;
+                }
                 if (counter % 2 == 0) {
                     for (int i = 0; i < inv.getSize(); i++) {
                         if ((i < 9 || i % 9 == 0 || i % 9 == 8 || i > 44) && inv.getItem(i).getDurability() == 13) {
@@ -318,19 +349,23 @@ public class BlackjackRuntime {
                 p.sendMessage(SCGMessageFormatting.errorMessagePrefix + "You've lost! New Balance: " + ChatColor.GOLD + SimplyCasinoGames.economy.format(bal));
             }
             else {
+                boolean hasBlackjack = false;
                 winEvent(p, 0);
                 double winnings = wager;
                 if (calcCardValues("dealer") != calcCardValues(p.getName())) {
                     winnings *= 2;
                     if (calcCardValues(p.getName()) == 21) {
+                        hasBlackjack = true;
                         winnings *= 2;
-                        SimplyCasinoGames.economy.setBalance(p.getName(), winnings + bal);
-                        p.sendMessage(SCGMessageFormatting.messagePrefix + "You've hit blackjack! New Balance: " + ChatColor.GOLD + SimplyCasinoGames.economy.format(winnings + bal));
-                        return;
                     }
                 }
                 SimplyCasinoGames.economy.setBalance(p.getName(), winnings + bal);
-                p.sendMessage(SCGMessageFormatting.messagePrefix + "You've won! New Balance: " + ChatColor.GOLD + SimplyCasinoGames.economy.format(winnings + bal));
+                if (hasBlackjack) {
+                    p.sendMessage(SCGMessageFormatting.messagePrefix + "You've hit blackjack! New Balance: " + ChatColor.GOLD + SimplyCasinoGames.economy.format(winnings + bal));
+                }
+                else {
+                    p.sendMessage(SCGMessageFormatting.messagePrefix + "You've won! New Balance: " + ChatColor.GOLD + SimplyCasinoGames.economy.format(winnings + bal));
+                }
             }
 
             new BukkitRunnable() {

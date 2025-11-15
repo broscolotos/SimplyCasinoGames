@@ -4,6 +4,7 @@ package com.railwaycraft.simplycasinogames.listeners;
 import com.railwaycraft.simplycasinogames.SimplyCasinoGames;
 import com.railwaycraft.simplycasinogames.handlers.BlackjackPregame;
 import com.railwaycraft.simplycasinogames.handlers.BlackjackRuntime;
+import com.railwaycraft.simplycasinogames.handlers.RouletteRuntime;
 import com.railwaycraft.simplycasinogames.handlers.SlotRuntime;
 import com.railwaycraft.simplycasinogames.util.BlackjackLobbyUtility;
 import com.railwaycraft.simplycasinogames.util.SCGMessageFormatting;
@@ -31,7 +32,7 @@ public class SCGEventListener implements Listener {
         //if this inventory isn't one of our GUI's, leave early.
         if (!(inv.getName().contains(ChatColor.YELLOW.toString()) &&
             inv.getName().contains(ChatColor.BOLD.toString()) &&
-                (inv.getName().contains(" slots") || inv.getName().contains(" blackjack")))) {
+                (inv.getName().contains(" slots") || inv.getName().contains(" blackjack") || inv.getName().contains("Roulette")))) {
             return;
         }
 
@@ -91,6 +92,21 @@ public class SCGEventListener implements Listener {
             BlackjackRuntime game = SimplyCasinoGames.runningBlackjackGames.get(player.getMetadata("lobby").get(0).asInt());
             player.performCommand("blackjack " + player.getName() + " " + game.table + " " + game.wager);
         }
+
+        //handle roulette click events
+        else if (name.contains("Select Color")) {
+            short dmg = event.getCurrentItem().getDurability();
+            //TODO: CHECK BALANCE AND WITHDRAW
+            RouletteRuntime game = SimplyCasinoGames.rouletteGames.get(player);
+            if (SimplyCasinoGames.economy.getBalance(player.getName()) < game.cost) {
+                player.sendMessage(SCGMessageFormatting.errorMessagePrefix + "Insufficient funds!");
+                return;
+            }
+            SimplyCasinoGames.economy.withdraw(player.getName(), game.cost);
+            game.setColor(dmg);
+            game.openGUI();
+
+        }
     }
 
 
@@ -125,7 +141,13 @@ public class SCGEventListener implements Listener {
             game.players.remove(p);
             game.isReady.remove(p);
             game.updateLeftPlayers();
-            //TODO: update current player's inventories to remove the player. Make it red stained glass like ChatColor.RED + <player name> (dropped) that shows what they had in their hand.
         }
+        else if (event.getInventory().getName().contains("Roulette table")) {
+            RouletteRuntime game = SimplyCasinoGames.rouletteGames.get((Player)event.getPlayer());
+            game.inventory = null;
+            game.player = null;
+            SimplyCasinoGames.rouletteGames.remove((Player)event.getPlayer());
+        }
+
     }
 }

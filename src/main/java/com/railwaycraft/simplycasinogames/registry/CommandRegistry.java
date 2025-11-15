@@ -3,6 +3,7 @@ package com.railwaycraft.simplycasinogames.registry;
 
 import com.railwaycraft.simplycasinogames.SimplyCasinoGames;
 import com.railwaycraft.simplycasinogames.commands.CommandBlackjack;
+import com.railwaycraft.simplycasinogames.commands.CommandRoulette;
 import com.railwaycraft.simplycasinogames.commands.CommandSlots;
 
 public class CommandRegistry {
@@ -12,5 +13,7 @@ public class CommandRegistry {
         instance.getCommand("slots").setExecutor(commandSlots);
         CommandBlackjack commandBlackjack = new CommandBlackjack();
         instance.getCommand("blackjack").setExecutor(commandBlackjack);
+        CommandRoulette commandRoulette = new CommandRoulette();
+        instance.getCommand("roulette").setExecutor(commandRoulette);
     }
 }
